@@ -1,0 +1,50 @@
+= Gradient Tracer File Scanning Mechanism
+
+The Gradient Tracer library is designed to dynamically discover and execute functions annotated with a custom `Executable` annotation. This document describes the folder and file naming conventions, the structure of the library, and the mechanism used for scanning and executing these functions.
+
+== Folder and File Naming Conventions
+
+The library expects a specific folder and file naming convention to locate the scripts and functions to be executed.
+
+=== Folder Naming Convention
+
+The top-level folders should follow the naming convention:
+
+`TS-<NUMBER>`
+
+Where `<NUMBER>` is a numeric identifier. For example:
+
+* `TS-001`
+* `TS-002`
+* `TS-003`
+
+=== File Naming Convention
+
+Within each `TS-<NUMBER>` folder, the Python script files should follow the naming convention:
+
+`UC-<NUMBER>.py`
+
+Where `<NUMBER>` is a numeric identifier. For example:
+
+* `UC-001.py`
+* `UC-002.py`
+* `UC-003.py`
+
+== File Structure
+
+The expected structure of the project is as follows:
+
+....
+your_data/
+├── core.py
+├── TS-001/
+│   └── UC-001.py
+│   └── UC-002.py
+├── TS-002/
+│   └── UC-001.py
+│   └── UC-002.py
+└── TS-003/
+    └── UC-001.py
+    └── UC-002.py
+....
+

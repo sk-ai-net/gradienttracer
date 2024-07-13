@@ -11,6 +11,28 @@ This library aims to simplify the process of tracing and logging gradients, maki
 *  *Sample Processing*: Processes samples written in Python following logical file and directories structure and naming, executes expressions, and performs backpropagation.
 *  *Result Logging*: Stores the computed gradients, operations directed graphs and results into following test structure files for easy analysis and debugging.
 
+== Project structure
+
+....
+gradient_tracer/
+├── gradient_tracer/
+│   ├── __init__.py
+│   ├── core.py
+│   ├── tests/
+│   │   ├── __init__.py
+│   │   └── test_core.py
+│   ├── docs/
+│   │   └── index.adoc
+│   └── examples/
+│       └── example_usage.py
+├── README.adoc
+├── LICENSE
+├── setup.py
+└── requirements.txt
+
+....
+
+
 == Attribution
 
 This project is inspired by Andrej Karpathy's work on micrograd. Check out the original project here: https://github.com/karpathy/micrograd[micrograd by Andrej Karpathy].
