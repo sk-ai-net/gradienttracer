@@ -1,6 +1,6 @@
 = Gradient Tracer
 
-image::pics/logo.png[Gradient Tracer Logo]
+image::pics/logo.webp[Gradient Tracer Logo]
 
 Gradient Tracer is a Python library designed to leverage automatic differentiation capabilities of established libraries (e.g. PyTorch) to compute gradients for tensor expressions, execute expressions and backpropagation, and store the results serving as reference data for testing other implementation.
 This library aims to simplify the process of tracing and logging gradients, making it easier to analyze and debug custom implemenation of machine learning models.
