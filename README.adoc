@@ -1,0 +1,22 @@
+= Gradient Tracer
+
+image::pics/logo.png[Gradient Tracer Logo]
+
+Gradient Tracer is a Python library designed to leverage automatic differentiation capabilities of established libraries (e.g. PyTorch) to compute gradients for tensor expressions, execute expressions and backpropagation, and store the results serving as reference data for testing other implementation.
+This library aims to simplify the process of tracing and logging gradients, making it easier to analyze and debug custom implemenation of machine learning models.
+
+== Features
+
+*  *Automatic Differentiation* : Utilizes PyTorch's autograd to compute gradients for tensor expressions.
+*  *Sample Processing*: Processes samples written in Python following logical file and directories structure and naming, executes expressions, and performs backpropagation.
+*  *Result Logging*: Stores the computed gradients, operations directed graphs and results into following test structure files for easy analysis and debugging.
+
+== Attribution
+
+This project is inspired by Andrej Karpathy's work on micrograd. Check out the original project here: https://github.com/karpathy/micrograd[micrograd by Andrej Karpathy].
+
+== License
+
+Gradient Tracer is released under the MIT License. See the link
+LICENSE
+file for more details.
