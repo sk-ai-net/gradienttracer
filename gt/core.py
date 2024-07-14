@@ -5,6 +5,8 @@ import importlib.util
 from typing import List, Dict, Callable
 import torch
 
+from gt.pytorch.io.writer import store_experiment_as_gguf
+
 
 # Custom annotation
 def Executable(description):
@@ -59,7 +61,21 @@ def iterate_and_execute(folder_path):
     return results
 
 
+def exec_and_store(folder_path, output_path):
+    experiment_results = iterate_and_execute(folder_path)
+    for result in experiment_results:
+        ts_folder = os.path.join(output_path, result['test_suite'])
+        os.makedirs(ts_folder, exist_ok=True)
+        gguf_file_path = os.path.join(ts_folder, f"{result['use_case']}_{result['name']}.gguf")
+        tensors = {f"input_{i}": tensor for i, tensor in enumerate(result['inputs'])}
+        store_experiment_as_gguf(
+            experiment_description=result['description'],
+            tensors=tensors,
+            operation_callback=lambda *args: result['result'],
+            gguf_file_path=gguf_file_path
+        )
+
+
 if __name__ == "__main__":
-    scr_results = iterate_and_execute("/Users/A9973957/projects/tribit.ai/gradienttracer/gt/examples")
-    for result in scr_results:
-        print(result)
+    exec_and_store("gt/examples",
+                   "gt/results")

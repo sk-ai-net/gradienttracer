@@ -28,11 +28,12 @@ def store_experiment_as_gguf(experiment_description: str, tensors: dict, operati
     :param operation_callback: Callback function to perform the operation
     :param gguf_file_path: Path to the gguf file to store the results
     """
-    # Convert tensors to Little Endian format after capturing variable names
-    tensors_le = {name: __convert_to_f32__(__ensure_little_endian__(tensor.numpy())) for name, tensor in tensors.items()}
+    # Convert tensors to Little Endian format after detaching them
+    tensors_le = {name: __convert_to_f32__(__ensure_little_endian__(tensor.detach().numpy())) for name, tensor in tensors.items()}
 
-    # Perform the operation using the callback
-    result = __convert_to_f32__(__ensure_little_endian__(operation_callback(*tensors.values()).numpy()))
+    # Perform the operation using the callback and detach the result tensor
+    result = operation_callback(*[tensor.detach() for tensor in tensors.values()])
+    result_le = __convert_to_f32__(__ensure_little_endian__(result.detach().numpy()))
 
     # Prepare data to write into gguf file
     writer = gguf.GGUFWriter(gguf_file_path, arch='llama')
@@ -40,7 +41,7 @@ def store_experiment_as_gguf(experiment_description: str, tensors: dict, operati
     for name, tensor_le in tensors_le.items():
         writer.add_tensor(name, tensor_le)
     writer.add_name(operation_callback.__name__)
-    writer.add_tensor("result", result)
+    writer.add_tensor("result", result_le)
     writer.write_header_to_file()
     writer.write_kv_data_to_file()
     writer.write_tensors_to_file()
