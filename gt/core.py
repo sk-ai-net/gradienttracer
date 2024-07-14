@@ -74,8 +74,3 @@ def exec_and_store(folder_path, output_path):
             operation_callback=lambda *args: result['result'],
             gguf_file_path=gguf_file_path
         )
-
-
-if __name__ == "__main__":
-    exec_and_store("gt/examples",
-                   "gt/results")

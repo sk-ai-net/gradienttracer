@@ -32,6 +32,17 @@ gradient_tracer/
 
 ....
 
+== Usage
+
+NOTE: This library is still under heavy development.
+
+* create your working folder
+* add subfolders with test suites and test cases following  file names convention (see more about Executable annotation in docs)
+* create your virtual environment e.g. with `pipenv --python 3.12`
+* install `gradienttracer` from source code `pipenv install git+https://github.com/michalharakal/gradienttracer@main#egg=gradienttracer`
+* activate shell `pipenv shell`
+* run cli command `gt --help` to commandline parameters
+
 
 == Attribution
 

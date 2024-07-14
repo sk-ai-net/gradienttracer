@@ -8,8 +8,12 @@ torch = "*"
 numpy = "*"
 gguf = "*"
 sentencepiece = "*"
+typer = "*"
+wheel = "*"
 
 [dev-packages]
+typer-cli = "*"
+setuptools = "*"
 
 [requires]
 python_version = "3.12"
