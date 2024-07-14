@@ -19,39 +19,27 @@ def __convert_to_f32__(tensor: torch.Tensor) -> numpy.ndarray:
     return tensor
 
 
-def store_experiment_as_gguf(experiment_description: str, operand1: torch.Tensor, operand2: torch.Tensor,
-                             operation_callback, gguf_file_path: str):
+def store_experiment_as_gguf(experiment_description: str, tensors: dict, operation_callback, gguf_file_path: str):
     """
-    Perform a mathematical operation on two tensors and store the operands, operator, and result in a gguf file.
+    Perform a mathematical operation on an array of tensors and store the operands, operator, and result in a gguf file.
 
     :param experiment_description: stores a description of the experiment
-    :param operand1: First tensor operand
-    :param operand2: Second tensor operand
+    :param tensors: Dictionary containing tensor names and their values
     :param operation_callback: Callback function to perform the operation
     :param gguf_file_path: Path to the gguf file to store the results
     """
-    # Get the names of the variables passed as arguments
-    frame = inspect.currentframe().f_back
-    args, _, _, values = inspect.getargvalues(frame)
-    operand1_name = [name for name in values if values[name] is operand1][0]
-    operand2_name = [name for name in values if values[name] is operand2][0]
-    operation_callback_name = [name for name in values if values[name] is operation_callback][0]
-
     # Convert tensors to Little Endian format after capturing variable names
-
-    operand1_le = __convert_to_f32__(__ensure_little_endian__(operand1.numpy()))
-    operand2_le = __convert_to_f32__(__ensure_little_endian__(operand2.numpy()))
+    tensors_le = {name: __convert_to_f32__(__ensure_little_endian__(tensor.numpy())) for name, tensor in tensors.items()}
 
     # Perform the operation using the callback
-    result = __convert_to_f32__(
-        __ensure_little_endian__(operation_callback(operand1, operand2).numpy()))
+    result = __convert_to_f32__(__ensure_little_endian__(operation_callback(*tensors.values()).numpy()))
 
     # Prepare data to write into gguf file
     writer = gguf.GGUFWriter(gguf_file_path, arch='llama')
     writer.add_description(experiment_description)
-    writer.add_tensor(operand1_name, operand1_le)
-    writer.add_tensor(operand2_name, operand2_le)
-    writer.add_name(operation_callback_name)
+    for name, tensor_le in tensors_le.items():
+        writer.add_tensor(name, tensor_le)
+    writer.add_name(operation_callback.__name__)
     writer.add_tensor("result", result)
     writer.write_header_to_file()
     writer.write_kv_data_to_file()
