@@ -2,10 +2,10 @@
 
 import os
 import importlib.util
-from typing import List, Dict, Callable
-import torch
 
+from gt.dot.dag2dot import dag_2_dot
 from gt.pytorch.io.writer import store_experiment_as_gguf
+from gt.pytorch.trace import trace
 
 
 # Custom annotation
@@ -74,3 +74,7 @@ def exec_and_store(folder_path, output_path):
             operation_callback=lambda *args: result['result'],
             gguf_file_path=gguf_file_path
         )
+        graph = trace(result['result'])
+        dot = dag_2_dot(graph)
+        dot_file_path = os.path.join(ts_folder, f"{result['use_case']}_{result['name']}.dot")
+        dot.render(dot_file_path)

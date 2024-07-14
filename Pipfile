@@ -10,6 +10,7 @@ gguf = "*"
 sentencepiece = "*"
 typer = "*"
 wheel = "*"
+graphviz = "*"
 
 [dev-packages]
 typer-cli = "*"

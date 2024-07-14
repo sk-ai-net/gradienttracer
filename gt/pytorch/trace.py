@@ -1,21 +1,19 @@
+from typing import List, Dict
+
 import torch
 from torch import Tensor
 
-
-class Node:
-    def __init__(self, name: str, value: float, grad: float):
-        self.name = name
-        self.value = value
-        self.grad = grad
+from gt.dot.dag import Graph, Node, OpNode, Edge, ValueNode
 
 
-class OpNode:
-    def __init__(self, name: str):
-        self.name = name
-
-
-def trace(root: Tensor):
-    nodes, edges = {}, set()
+def trace(root: Tensor) -> Graph:
+    """
+    Converts pytorch's DAG with tensors and operations into generic graph
+    :param root: output tensor
+    :return: generic graph
+    """
+    nodes: Dict[str, Node] = dict()
+    edges: List[Edge] = list()
 
     def get_unique_name(obj, suffix=""):
         return f"{id(obj)}{suffix}"
@@ -24,7 +22,7 @@ def trace(root: Tensor):
         if get_unique_name(v) not in nodes:
             if hasattr(v, 'data'):
                 id = get_unique_name(v)
-                node = Node(
+                node = ValueNode(
                     name=id,
                     value=v.item() if hasattr(v, 'data') else None,
                     grad=v.grad.item() if v.grad is not None else None
@@ -33,7 +31,7 @@ def trace(root: Tensor):
             elif hasattr(v, 'variable'):
                 # Handles the case for leaf tensors
                 id = get_unique_name(v)
-                node = Node(
+                node = ValueNode(
                     name=id,
                     value=v.variable.item() if hasattr(v.variable, 'data') else None,
                     grad=v.variable.grad.item() if v.variable.grad is not None else None
@@ -44,13 +42,13 @@ def trace(root: Tensor):
                 op_node_name = get_unique_name(v, op_name)
                 op_node = OpNode(op_node_name)
                 nodes[op_node_name] = op_node
-                edges.add((op_node_name, get_unique_name(v)))
+                edges.append(Edge(op_node_name, get_unique_name(v)))
                 for child, _ in v.grad_fn.next_functions:
                     if child is not None:
-                        edges.add((get_unique_name(child), op_node_name))
+                        edges.append(Edge(get_unique_name(child), op_node_name))
                         build(child)
             elif isinstance(v, torch.Tensor) and v.grad_fn is None:
-                node = Node(
+                node = ValueNode(
                     name=get_unique_name(v),
                     value=v.item() if hasattr(v, 'data') else None,
                     grad=v.grad.item() if v.grad is not None else None
@@ -58,7 +56,7 @@ def trace(root: Tensor):
                 nodes[get_unique_name(v)] = node
 
     build(root)
-    return nodes, edges
+    return Graph(nodes, edges)
 
 
 if __name__ == '__main__':
@@ -67,13 +65,13 @@ if __name__ == '__main__':
     b = torch.tensor(2.0, requires_grad=True)
     c = a * b
 
-    nodes, edges = trace(c)
+    graph = trace(c)
 
     # Print the traced nodes and edges
-    for n in nodes.values():
-        if isinstance(n, Node):
+    for k, n in graph.nodes.items():
+        if isinstance(n, ValueNode):
             print(f"Node {n.name}: value={n.value}, grad={n.grad}")
         elif isinstance(n, OpNode):
             print(f"OpNode {n.name}")
-    for n1, n2 in edges:
-        print(f"Edge from {n1} to {n2}")
+    for n1 in graph.edges:
+        print(f"Edge from {n1.from_node} to {n1.to_node}")
