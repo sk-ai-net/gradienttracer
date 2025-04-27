@@ -16,7 +16,8 @@ def run(source_folder: Annotated[str, typer.Argument(help='test suites folder')]
     Iterate over all test suites and execute all tests and store results into target folder.
     """
     exec_and_store(source_folder,
-                   target_folder)
+                   target_folder,
+                   generate_dot=False)
 
 
 if __name__ == "__main__":

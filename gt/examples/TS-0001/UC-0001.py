@@ -23,3 +23,14 @@ def simple_multiplication():
     c = a * b
     c.backward()
     return [a, b], c
+
+
+@Executable("simple multiplication")
+def result_array_of_tensors():
+    a = torch.tensor(3.0, requires_grad=True)
+    b = torch.tensor(2.0, requires_grad=True)
+    c = a * b
+    c.backward()
+    return {"a": a,
+            "b": b,
+            "c": c}
