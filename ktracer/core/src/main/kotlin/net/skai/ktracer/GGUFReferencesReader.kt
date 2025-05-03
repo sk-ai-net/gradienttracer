@@ -37,6 +37,7 @@ class GGUFReferencesReader(private val basePath: Path) {
             }
     }
 
+    /*
 
     /** Retrieve a metadata field as a String, if it exists and is of type string */
     fun GGUFReader.getString(key: String): String {
@@ -67,6 +68,8 @@ class GGUFReferencesReader(private val basePath: Path) {
     }
 
 
+     */
+
     /**
      * Gets experiment description from a GGUF file
      * @param filePath Path to the GGUF file
@@ -75,6 +78,6 @@ class GGUFReferencesReader(private val basePath: Path) {
      */
     fun getExperimentDescription(filePath: Path): String {
         val reader = GGUFReader(filePath.inputStream().asSource().buffered())
-        return reader.getString("experiment_description")
+        return reader.getString("experiment_description") ?: ""
     }
 }

@@ -1,8 +1,8 @@
 package net.skai.ktracer
 
 import kotlinx.coroutines.*
-import kotlinx.io.asSource
-import kotlinx.io.buffered
+import net.skai.ktracer.dsl.TestCase
+import net.skai.ktracer.dsl.UseCase
 import java.nio.file.Path
 import kotlin.io.path.*
 
@@ -43,7 +43,7 @@ class TestSuiteExecutor(
             val startTime = System.currentTimeMillis()
             
             // Execute the test case
-            val result = testCase.execute()
+            val result = 1// testCase.execute()
             
             val executionTime = System.currentTimeMillis() - startTime
             
@@ -78,6 +78,8 @@ class TestSuiteExecutor(
     private fun storeResult(result: TestExecutionResult) {
         val tsFolder = outputPath.resolve("TS-${result.testSuite}")
         tsFolder.createDirectories()
+
+        /*
         
         val ggufPath = tsFolder.resolve("${result.name}.gguf")
         
@@ -104,6 +106,8 @@ class TestSuiteExecutor(
             val dotPath = tsFolder.resolve("${result.name}.dot")
             dot.render(dotPath.toString())
         }
+
+         */
     }
 
     /**

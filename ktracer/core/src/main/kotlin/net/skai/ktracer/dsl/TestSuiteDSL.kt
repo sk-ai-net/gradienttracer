@@ -1,5 +1,6 @@
-package net.skai.ktracer
+package net.skai.ktracer.dsl
 
+import sk.ai.net.Tensor
 import java.nio.file.Path
 import kotlin.io.path.*
 
@@ -21,14 +22,14 @@ class TestCase(
  */
 class TestSuite(val name: String) {
     private val cases = mutableListOf<TestCase>()
-    
+
     fun test(description: String, block: TestCase.() -> Unit) {
         val testCase = TestCase(description)
         testCase.apply(block)
         testCase.validate()
         cases.add(testCase)
     }
-    
+
     internal fun getCases() = cases.toList()
 }
 
@@ -37,13 +38,13 @@ class TestSuite(val name: String) {
  */
 class UseCase(val name: String) {
     private val suites = mutableListOf<TestSuite>()
-    
+
     fun suite(name: String, block: TestSuite.() -> Unit) {
         val testSuite = TestSuite(name)
         testSuite.apply(block)
         suites.add(testSuite)
     }
-    
+
     internal fun getSuites() = suites.toList()
 }
 
@@ -56,29 +57,21 @@ class TestRunner(private val outputPath: Path) {
         useCase.apply(block)
         return useCase
     }
-    
+
     fun execute(useCase: UseCase) {
         useCase.getSuites().forEach { suite ->
             val suitePath = outputPath.resolve("TS-${suite.name}")
             suitePath.createDirectories()
-            
+
             suite.getCases().forEach { case ->
                 val ggufPath = suitePath.resolve("UC-${useCase.name}_${case.hashCode()}.gguf")
-                
+
                 // Store test case in GGUF format
                 val tensors = mutableMapOf<String, Any>()
                 case.inputs.forEachIndexed { index, input ->
                     tensors["input_$index"] = input
                 }
                 case.result?.let { tensors["result"] = it }
-                
-                // Use GGUFWriter to store the tensors and metadata
-                GGUFWriter(ggufPath).use { writer ->
-                    writer.addMetadata("experiment_description", case.description)
-                    tensors.forEach { (name, tensor) ->
-                        writer.addTensor(name, tensor)
-                    }
-                }
             }
         }
     }
@@ -124,3 +117,6 @@ runner.useCase("matrix_ops") {
     }
 }.also { runner.execute(it) }
 */
+fun TestCase.readInput(i: Int): Tensor {
+    TODO("Not yet implemented")
+}
